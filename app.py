@@ -242,4 +242,10 @@ NOTICE TEXT:
 
 # Run application
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)ain."  
+        }), 500
+
+
+# Run application
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)

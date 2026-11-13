@@ -1,0 +1,981 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notice2Action AI | Smart Student Assistant</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f4f6fc;
+    color: #20243a;
+}
+
+header {
+    background: #171d3b;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #8795ff;
+}
+
+.header-tag {
+    color: #dce1ff;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.container {
+    max-width: 1200px;
+    width: 92%;
+    margin: auto;
+    padding: 38px 0;
+}
+
+.welcome {
+    margin-bottom: 30px;
+}
+
+.welcome h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.welcome p {
+    color: #737991;
+    font-size: 15px;
+}
+
+.section-title {
+    font-size: 21px;
+    margin-bottom: 18px;
+    font-weight: 750;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(30, 40, 90, 0.06);
+    margin-bottom: 38px;
+}
+
+.upload-heading {
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.upload-description {
+    color: #737991;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 190px;
+    border: 2px dashed #aab5ed;
+    background: #f8f9ff;
+    border-radius: 15px;
+    padding: 30px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.upload-area:hover,
+.upload-area.dragging {
+    background: #eff1ff;
+    border-color: #5266dc;
+}
+
+.upload-icon {
+    font-size: 43px;
+    margin-bottom: 12px;
+}
+
+.upload-area h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.upload-area p {
+    color: #858ba0;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.file-name {
+    margin-top: 12px;
+    color: #4658ca;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+#pdfFile {
+    display: none;
+}
+
+.controls {
+    display: flex;
+    align-items: end;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.control-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.control-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #dce0ec;
+    border-radius: 10px;
+    background: white;
+    font-size: 14px;
+    outline: none;
+}
+
+select:focus {
+    border-color: #5266dc;
+}
+
+.primary-btn {
+    border: none;
+    background: #5266dc;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    min-height: 45px;
+}
+
+.primary-btn:hover {
+    background: #3d50c2;
+    transform: translateY(-1px);
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.status {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.results {
+    display: none;
+    margin-top: 35px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.result-card {
+    background: white;
+    padding: 23px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(30, 40, 90, 0.045);
+    border: 1px solid #edf0f8;
+    min-width: 0;
+    border-top: 3px solid #6577e8;
+}
+
+.result-card h3 {
+    font-size: 16px;
+    margin-bottom: 14px;
+    color: #3444a3;
+}
+
+.result-content {
+    font-size: 14px;
+    color: #50566c;
+    line-height: 1.85;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.full-card {
+    grid-column: 1 / -1;
+}
+
+.deadline-card {
+    border-top-color: #e6a23c;
+    background: #fffdf8;
+}
+
+.deadline-card h3 {
+    color: #9a6416;
+}
+
+/* Student Action Checklist */
+
+.checklist-card {
+    border-top-color: #35a77a;
+}
+
+.checklist-card h3 {
+    color: #25835e;
+}
+
+.checklist-progress {
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #25835e;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e8eee9;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #35a77a;
+    border-radius: 20px;
+    transition: width 0.25s ease;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 12px;
+    margin-bottom: 9px;
+    background: #f8f9ff;
+    border: 1px solid #edf0f8;
+    border-radius: 10px;
+}
+
+.checklist-item input {
+    width: 17px;
+    height: 17px;
+    margin-top: 3px;
+    accent-color: #25835e;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checklist-item label {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #50566c;
+    cursor: pointer;
+}
+
+.checklist-item.completed {
+    background: #f0f8f3;
+}
+
+.checklist-item.completed label {
+    text-decoration: line-through;
+    color: #9298a8;
+}
+
+.download-btn {
+    border: 1px solid #5266dc;
+    background: white;
+    color: #4659c5;
+    padding: 11px 17px;
+    border-radius: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.download-btn:hover {
+    background: #f0f2ff;
+}
+
+.dashboard-section {
+    margin-top: 45px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 15px;
+    padding: 21px;
+    box-shadow: 0 5px 20px rgba(30, 40, 90, 0.04);
+    border: 1px solid #edf0f8;
+}
+
+.feature-icon {
+    font-size: 29px;
+    margin-bottom: 13px;
+}
+
+.feature-card h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 12px;
+    color: #858ba0;
+    line-height: 1.6;
+}
+
+footer {
+    text-align: center;
+    padding: 27px;
+    color: #858ba0;
+    font-size: 12px;
+    margin-top: 30px;
+}
+
+@media(max-width: 750px) {
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .welcome h1 {
+        font-size: 25px;
+    }
+
+    .full-card {
+        grid-column: auto;
+    }
+}
+
+@media(max-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        align-items: stretch;
+    }
+
+    .primary-btn {
+        width: 100%;
+    }
+
+    .upload-card {
+        padding: 19px;
+    }
+
+    .container {
+        width: 94%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🚀 Notice2Action <span>AI</span></div>
+    <div class="header-tag">SMART STUDENT ASSISTANT</div>
+</header>
+
+<main class="container">
+
+    <section class="welcome">
+        <h1>Welcome, Student! 👋</h1>
+        <p>Understand college notices faster. Never miss an important update.</p>
+    </section>
+
+    <section class="upload-card">
+
+        <h2 class="section-title">📄 AI Notice Analyzer</h2>
+
+        <h3 class="upload-heading">Upload Your College Notice</h3>
+        <p class="upload-description">
+            Upload a PDF and let AI identify important information.
+        </p>
+
+        <form id="uploadForm">
+
+            <label class="upload-area" id="uploadArea" for="pdfFile">
+                <div class="upload-icon">☁️</div>
+                <h3>Upload your college notice</h3>
+                <p>Click here or drag and drop your PDF file</p>
+                <p>Supported format: PDF</p>
+                <div class="file-name" id="fileName"></div>
+            </label>
+
+            <input
+                type="file"
+                id="pdfFile"
+                name="file"
+                accept=".pdf,application/pdf"
+                required
+            >
+
+            <div class="controls">
+
+                <div class="control-group">
+                    <label for="language">Analysis Language</label>
+                    <select id="language" name="language">
+                        <option value="English">English</option>
+                        <option value="Tamil">Tamil</option>
+                    </select>
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="analyzeButton"
+                >
+                    ✨ Analyze Notice
+                </button>
+
+            </div>
+        </form>
+
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    </section>
+
+    <section class="results" id="results">
+
+        <div class="result-header">
+            <h2 class="section-title">📊 AI Analysis Results</h2>
+
+            <button
+                class="download-btn"
+                id="downloadButton"
+                type="button"
+            >
+                ⬇ Download Report
+            </button>
+        </div>
+
+        <div class="result-grid">
+
+            <article class="result-card">
+                <h3>📝 Notice Summary</h3>
+                <div class="result-content" id="summary"></div>
+            </article>
+
+            <article class="result-card">
+                <h3>📅 Important Dates and Deadlines</h3>
+                <div class="result-content" id="dates"></div>
+            </article>
+
+            <article class="result-card deadline-card full-card">
+                <h3>⏰ Smart Deadline Tracker</h3>
+                <div class="result-content" id="deadlineTracker">
+                    Analyze a notice to find important deadlines.
+                </div>
+            </article>
+
+            <article class="result-card">
+                <h3>📌 Important Instructions</h3>
+                <div class="result-content" id="instructions"></div>
+            </article>
+
+            <article class="result-card checklist-card">
+                <h3>✅ Student Action Checklist</h3>
+
+                <div class="checklist-progress" id="checklistProgress">
+                    0 tasks completed
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div id="actions"></div>
+            </article>
+
+            <article class="result-card full-card">
+                <h3>🎓 Scholarship or Application Details</h3>
+                <div class="result-content" id="scholarship"></div>
+            </article>
+
+            <article class="result-card full-card">
+                <h3>📃 Extracted PDF Text</h3>
+                <div class="result-content" id="extractedText"></div>
+            </article>
+
+        </div>
+    </section>
+
+    <section class="dashboard-section">
+
+        <h2 class="section-title">Your Student Dashboard</h2>
+
+        <div class="dashboard-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Notice Analyzer</h3>
+                <p>Convert lengthy college notices into simple summaries.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3>Scholarship Checker</h3>
+                <p>Identify scholarship and application information.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h3>Deadline Tracker</h3>
+                <p>Find important dates from college notices.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Student Assistant</h3>
+                <p>Understand important student updates easily.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    © 2026 Notice2Action AI | Smart Student Assistant
+</footer>
+
+<script>
+
+const uploadForm = document.getElementById("uploadForm");
+const pdfFile = document.getElementById("pdfFile");
+const uploadArea = document.getElementById("uploadArea");
+const analyzeButton = document.getElementById("analyzeButton");
+const statusBox = document.getElementById("status");
+const results = document.getElementById("results");
+
+let latestReport = "";
+let latestDeadlineReport = "";
+let latestChecklistTasks = [];
+
+
+pdfFile.addEventListener("change", function () {
+    showSelectedFile(this.files[0]);
+});
+
+
+function showSelectedFile(file) {
+    document.getElementById("fileName").textContent =
+        file ? "Selected: " + file.name : "";
+}
+
+
+uploadArea.addEventListener("dragover", function (event) {
+    event.preventDefault();
+    uploadArea.classList.add("dragging");
+});
+
+
+uploadArea.addEventListener("dragleave", function () {
+    uploadArea.classList.remove("dragging");
+});
+
+
+uploadArea.addEventListener("drop", function (event) {
+    event.preventDefault();
+    uploadArea.classList.remove("dragging");
+
+    const file = event.dataTransfer.files[0];
+
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+        statusBox.textContent = "Please select a PDF file.";
+        return;
+    }
+
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    pdfFile.files = transfer.files;
+
+    showSelectedFile(file);
+    statusBox.textContent = "";
+});
+
+
+function cleanText(text) {
+    return text
+        .replace(/\r/g, "")
+        .replace(/\*\*/g, "")
+        .replace(/^#+\s*/gm, "")
+        .trim();
+}
+
+
+function getSection(analysis, headingNumber, keywords) {
+
+    const lines = cleanText(analysis).split("\n");
+
+    let capturing = false;
+    let collected = [];
+
+    for (const line of lines) {
+
+        const trimmed = line.trim();
+        const lower = trimmed.toLowerCase();
+
+        const headingMatch = lower.match(/^\s*(\d+)[.)]\s*/);
+
+        if (headingMatch) {
+
+            const number = Number(headingMatch[1]);
+
+            if (capturing && number !== headingNumber) {
+                break;
+            }
+
+            if (number === headingNumber) {
+
+                capturing = true;
+
+                const afterNumber =
+                    lower.replace(/^\s*\d+[.)]\s*/, "");
+
+                if (keywords.some(word =>
+                    afterNumber.includes(word.toLowerCase())
+                )) {
+
+                    const originalContent =
+                        trimmed.replace(/^\s*\d+[.)]\s*/, "");
+
+                    const colonIndex = originalContent.indexOf(":");
+
+                    if (colonIndex !== -1) {
+                        collected.push(
+                            originalContent.substring(colonIndex + 1)
+                        );
+                    }
+                }
+
+                continue;
+            }
+        }
+
+        if (capturing) {
+            collected.push(line);
+        }
+    }
+
+    const content = collected.join("\n").trim();
+
+    return content || "Not mentioned in the notice.";
+}
+
+
+// Create interactive student checklist
+
+function renderActionChecklist(actionText) {
+
+    const container = document.getElementById("actions");
+    const progress = document.getElementById("checklistProgress");
+    const progressFill = document.getElementById("progressFill");
+
+    container.innerHTML = "";
+    latestChecklistTasks = [];
+
+    let tasks = actionText
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => line
+            .replace(/^[-*•]\s*/, "")
+            .replace(/^\d+[.)]\s*/, "")
+            .trim()
+        )
+        .filter(line =>
+            line &&
+            !line.toLowerCase().includes("not mentioned in the notice")
+        );
+
+    latestChecklistTasks = tasks.map(task => ({
+        text: task,
+        completed: false
+    }));
+
+    if (tasks.length === 0) {
+
+        container.textContent =
+            "No action points found in this notice.";
+
+        progress.textContent = "0 tasks completed";
+        progressFill.style.width = "0%";
+
+        return;
+    }
+
+    tasks.forEach((task, index) => {
+
+        const item = document.createElement("div");
+        item.className = "checklist-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = "task-" + index;
+
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+        label.textContent = task;
+
+        checkbox.addEventListener("change", function () {
+
+            latestChecklistTasks[index].completed = checkbox.checked;
+
+            item.classList.toggle("completed", checkbox.checked);
+
+            updateChecklistProgress();
+        });
+
+        item.appendChild(checkbox);
+        item.appendChild(label);
+
+        container.appendChild(item);
+    });
+
+    updateChecklistProgress();
+}
+
+
+function updateChecklistProgress() {
+
+    const total = latestChecklistTasks.length;
+
+    const completed = latestChecklistTasks.filter(
+        task => task.completed
+    ).length;
+
+    const percentage = total > 0
+        ? (completed / total) * 100
+        : 0;
+
+    document.getElementById("checklistProgress").textContent =
+        completed + " of " + total + " tasks completed";
+
+    document.getElementById("progressFill").style.width =
+        percentage + "%";
+}
+
+
+function displayAnalysis(analysis) {
+
+    document.getElementById("summary").textContent =
+        getSection(analysis, 1, ["notice summary"]);
+
+    document.getElementById("dates").textContent =
+        getSection(analysis, 2, ["important dates", "deadlines"]);
+
+    document.getElementById("instructions").textContent =
+        getSection(analysis, 3, ["important instructions"]);
+
+    document.getElementById("scholarship").textContent =
+        getSection(analysis, 5, ["scholarship", "application details"]);
+
+    renderActionChecklist(
+        getSection(analysis, 4, ["student action points"])
+    );
+
+    latestReport = analysis;
+
+    results.style.display = "block";
+}
+
+
+// PDF analysis
+
+uploadForm.addEventListener("submit", async function (event) {
+
+    event.preventDefault();
+
+    const file = pdfFile.files[0];
+
+    if (!file) {
+        statusBox.textContent = "Please select a PDF file.";
+        return;
+    }
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+        statusBox.textContent = "Please upload a valid PDF file.";
+        return;
+    }
+
+    const formData = new FormData(uploadForm);
+
+    analyzeButton.disabled = true;
+    analyzeButton.textContent = "⏳ Analyzing...";
+
+    statusBox.textContent =
+        "Your notice is being analyzed by AI. Please wait...";
+
+    results.style.display = "none";
+
+    try {
+
+        const response = await fetch("/analyze", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(
+                data.error || data.message || "Analysis failed."
+            );
+        }
+
+        const analysis = data.ai_analysis || "";
+
+        if (!analysis.trim()) {
+            throw new Error("AI returned an empty analysis.");
+        }
+
+        displayAnalysis(analysis);
+
+        latestDeadlineReport =
+            data.deadline_analysis ||
+            "No deadline information available.";
+
+        document.getElementById("deadlineTracker").textContent =
+            latestDeadlineReport;
+
+        document.getElementById("extractedText").textContent =
+            data.extracted_text || "No extracted text available.";
+
+        statusBox.textContent =
+            "✅ Notice analyzed successfully!";
+
+        results.scrollIntoView({ behavior: "smooth" });
+
+    } catch (error) {
+
+        statusBox.textContent = "❌ " + error.message;
+
+    } finally {
+
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = "✨ Analyze Notice";
+
+    }
+});
+
+
+// Download complete report
+
+document.getElementById("downloadButton").addEventListener("click", function () {
+
+    if (!latestReport) {
+        alert("Please analyze a notice first.");
+        return;
+    }
+
+    const checklistReport = latestChecklistTasks.map((task, index) => {
+
+        const status = task.completed ? "[COMPLETED]" : "[PENDING]";
+
+        return (index + 1) + ". " + status + " " + task.text;
+
+    }).join("\n");
+
+    const reportText =
+        "NOTICE2ACTION AI - ANALYSIS REPORT\n" +
+        "==================================\n\n" +
+
+        latestReport +
+
+        "\n\nSMART DEADLINE TRACKER\n" +
+        "======================\n" +
+        latestDeadlineReport +
+
+        "\n\nSTUDENT ACTION CHECKLIST\n" +
+        "========================\n" +
+        (checklistReport || "No action points found.") +
+
+        "\n\nGenerated by Notice2Action AI";
+
+    const blob = new Blob([reportText], {
+        type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "Notice2Action_AI_Report.txt";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+});
+
+</script>
+
+</body>
+</html>
